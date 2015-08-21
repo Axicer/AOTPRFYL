@@ -3,6 +3,6 @@ version: 1.0
 main: fr.axicer.AOTPRFYL.AOTPRFYLMain
 
 commands:
-  sign:
+  left:
     description: test
-    usage: /sign
+    usage: /left
