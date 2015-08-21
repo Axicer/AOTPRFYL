@@ -1,0 +1,8 @@
+name: AOTPRFYL
+version: 1.0
+main: fr.axicer.AOTPRFYL.AOTPRFYLMain
+
+commands:
+  sign:
+    description: test
+    usage: /sign

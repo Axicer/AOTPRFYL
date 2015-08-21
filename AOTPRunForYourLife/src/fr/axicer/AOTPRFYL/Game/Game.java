@@ -32,8 +32,10 @@ public class Game {
 	private Integer timeTaskID;
 	private Scoreboard scoreboard;
 	private Objective obj;
+	private boolean started;
 	
 	public Game(String name, String displayName, MapThemes theme, int maxPlayers, AOTPRFYLMain pl){
+		this.pl = pl;
 		this.setName(name);
 		this.setDisplayName(displayName);
 		this.setTheme(theme);
@@ -109,6 +111,12 @@ public class Game {
 	public void setObj(Objective obj) {
 		this.obj = obj;
 	}
+	public boolean isStarted() {
+		return started;
+	}
+	public void setStarted(boolean started) {
+		this.started = started;
+	}
 	
 	// GAME FUNCTIONS
 
@@ -135,6 +143,12 @@ public class Game {
 	}
 	public void unloadMap(){
 		Bukkit.unloadWorld(name, false);
+		try {
+			delete(new File(name));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public void reloadMap() throws Exception{
 		unloadMap();
@@ -180,6 +194,45 @@ public class Game {
 	public List<Player> getInMapPlayers(){
 		return this.getMap().getPlayers();
 	}
+	public static void delete(File file)
+	    	throws IOException{
+	 
+	    	if(file.isDirectory()){
+	 
+	    		//directory is empty, then delete it
+	    		if(file.list().length==0){
+	    			
+	    		   file.delete();
+	    		   //System.out.println("Directory is deleted : " 
+	                                                 //+ file.getAbsolutePath());
+	    			
+	    		}else{
+	    			
+	    		   //list all the directory contents
+	        	   String files[] = file.list();
+	     
+	        	   for (String temp : files) {
+	        	      //construct the file structure
+	        	      File fileDelete = new File(file, temp);
+	        		 
+	        	      //recursive delete
+	        	     delete(fileDelete);
+	        	   }
+	        		
+	        	   //check the directory again, if empty then delete it
+	        	   if(file.list().length==0){
+	           	     file.delete();
+	        	     //System.out.println("Directory is deleted : " 
+	                                                  //+ file.getAbsolutePath());
+	        	   }
+	    		}
+	    		
+	    	}else{
+	    		//if file, then delete it
+	    		file.delete();
+	    		//System.out.println("File is deleted : " + file.getAbsolutePath());
+	    	}
+	    }
 	
 	// START AND STOP FUNCTIONS
 	
