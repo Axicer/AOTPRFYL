@@ -6,7 +6,7 @@ import fr.axicer.AOTPRFYL.Commands.Executors.LeftCommand;
 
 public class CommandManager {
 	public static void registerCommands(AOTPRFYLMain pl){
-		pl.getCommand("left").setExecutor(new LeftCommand());
+		pl.getCommand("left").setExecutor(new LeftCommand(pl));
 		pl.getCommand("forcestart").setExecutor(new ForcestartCommand());
 	}
 }

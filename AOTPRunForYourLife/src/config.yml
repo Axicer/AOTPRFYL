@@ -1,3 +1,7 @@
+worldSpawn:
+  x: 0
+  y: 100
+  z: 0
 waitingSpawn:
   x: 0
   y: 201

@@ -20,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 
@@ -310,7 +311,33 @@ public class Game {
 		startTimer();
 	}
 	public void stop(){
-		this.started = false;
 		stopTimer();
+		setObj(scoreboard.registerNewObjective("RFYL", "dummy"));
+		for(Player player : getInMapPlayers()){
+			player.setGameMode(GameMode.SURVIVAL);
+			player.getInventory().clear();
+			player.setHealth(20);
+			player.setFoodLevel(20);
+			player.setExhaustion(5F);
+			player.teleport(new Location(Bukkit.getWorlds().get(0),
+					pl.getConfig().getDouble("worldSpawn.x"),
+					pl.getConfig().getDouble("worldSpawn.y"),
+					pl.getConfig().getDouble("worldSpawn.z")));
+		}
+		this.seconds = 0;
+		this.minutes = 10;
+		for(Team team : getScoreboard().getTeams()){
+			team.unregister();
+		}
+		setTeamRed(new GameTeam("red", ChatColor.RED+"Rouge", ChatColor.RED, getScoreboard()));
+		setTeamBlue(new GameTeam("blue", ChatColor.RED+"Bleu", ChatColor.BLUE, getScoreboard()));
+		setTeamGreen(new GameTeam("green", ChatColor.RED+"Vert", ChatColor.GREEN, getScoreboard()));
+		setTeamYellow(new GameTeam("yellow", ChatColor.RED+"Jaune", ChatColor.YELLOW, getScoreboard()));
+		this.teams.clear();
+		this.teams.add(teamRed);
+		this.teams.add(teamBlue);
+		this.teams.add(teamGreen);
+		this.teams.add(teamYellow);
+		this.started = false;
 	}
 }

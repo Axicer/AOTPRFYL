@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.axicer.AOTPRFYL.Commands.CommandManager;
 import fr.axicer.AOTPRFYL.Events.EventManager;
+import fr.axicer.AOTPRFYL.Game.Game;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class AOTPRFYLMain extends JavaPlugin{
@@ -21,6 +22,8 @@ public class AOTPRFYLMain extends JavaPlugin{
 	}
 	@Override
 	public void onDisable() {
-		
+		for(Game game : InventoryGames.getGames()){
+			game.unloadMap();
+		}
 	}
 }
