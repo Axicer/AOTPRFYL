@@ -18,8 +18,13 @@ public class LeftCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			for(Game game: InventoryGames.getGames()){
 				if(game.getMap() == player.getWorld()){
+					if(game.isStarted()){
+						game.getTeamForPlayer(player).removePlayer(player);
+						game.checkInGamePlayers();
+					}
 					player.teleport(Bukkit.getServer().getWorlds().get(0).getSpawnLocation());
 					player.sendMessage(ChatColor.GRAY+"Teleporté au spawn.");
+					player.getInventory().clear();
 					player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 				}
 			}

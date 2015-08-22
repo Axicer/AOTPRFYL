@@ -12,6 +12,7 @@ public class AOTPRFYLMain extends JavaPlugin{
 	public void onEnable() {
 		EventManager.registerEvents(this);
 		CommandManager.registerCommands(this);
+		saveDefaultConfig();
 		try {
 			InventoryGames.loadGames(this);
 		} catch (Exception e) {

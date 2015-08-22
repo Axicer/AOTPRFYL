@@ -4,15 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -31,8 +36,14 @@ public class Game {
 	private Integer minutes = 10;
 	private Integer timeTaskID;
 	private Scoreboard scoreboard;
-	private Objective obj;
 	private boolean started;
+	private Integer Startingtask;
+	private Objective obj;
+	private GameTeam teamRed;
+	private GameTeam teamBlue;
+	private GameTeam teamGreen;
+	private GameTeam teamYellow;
+	private ArrayList<GameTeam> teams = new ArrayList<GameTeam>();
 	
 	public Game(String name, String displayName, MapThemes theme, int maxPlayers, AOTPRFYLMain pl){
 		this.pl = pl;
@@ -41,7 +52,15 @@ public class Game {
 		this.setTheme(theme);
 		this.setMaxPlayers(maxPlayers);
 		this.scoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
-		this.obj = scoreboard.registerNewObjective(ChatColor.GREEN+""+ChatColor.BOLD+"RFYL", "dummy");
+		setObj(scoreboard.registerNewObjective("RFYL", "dummy"));
+		setTeamRed(new GameTeam("red", ChatColor.RED+"Rouge", ChatColor.RED, getScoreboard()));
+		setTeamBlue(new GameTeam("blue", ChatColor.RED+"Bleu", ChatColor.BLUE, getScoreboard()));
+		setTeamGreen(new GameTeam("green", ChatColor.RED+"Vert", ChatColor.GREEN, getScoreboard()));
+		setTeamYellow(new GameTeam("yellow", ChatColor.RED+"Jaune", ChatColor.YELLOW, getScoreboard()));
+		this.teams.add(teamRed);
+		this.teams.add(teamBlue);
+		this.teams.add(teamGreen);
+		this.teams.add(teamYellow);
 	}
 	
 	// GETTERS AND SETTERS
@@ -111,6 +130,30 @@ public class Game {
 	public void setObj(Objective obj) {
 		this.obj = obj;
 	}
+	public GameTeam getTeamRed() {
+		return teamRed;
+	}
+	public void setTeamRed(GameTeam teamRed) {
+		this.teamRed = teamRed;
+	}
+	public GameTeam getTeamBlue() {
+		return teamBlue;
+	}
+	public void setTeamBlue(GameTeam teamBlue) {
+		this.teamBlue = teamBlue;
+	}
+	public GameTeam getTeamGreen() {
+		return teamGreen;
+	}
+	public void setTeamGreen(GameTeam teamgreen) {
+		this.teamGreen = teamgreen;
+	}
+	public GameTeam getTeamYellow() {
+		return teamYellow;
+	}
+	public void setTeamYellow(GameTeam teamyellow) {
+		this.teamYellow = teamyellow;
+	}
 	public boolean isStarted() {
 		return started;
 	}
@@ -155,26 +198,22 @@ public class Game {
 	}
 	@SuppressWarnings("deprecation")
 	public void startTimer(){
-		timeTaskID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(pl, new BukkitRunnable() {
+		timeTaskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(pl, new BukkitRunnable() {
 			@Override
 			public void run() {
-				Objective objectif = null;
-				try{
-					objectif = getObj();
-					objectif.setDisplaySlot(null);
-					objectif.unregister();
-				}catch(Exception ex){}
+				getObj().unregister();
 				
-				objectif = scoreboard.registerNewObjective("RFYL", "dummy");
-				setObj(objectif);
+				setObj(scoreboard.registerNewObjective("RFYL", "dummy"));
 				
-				getObj().getScore("Timer:    "+formatter.format(getMinutes())+":"+formatter.format(getSeconds())).setScore(0);
+				obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+				obj.setDisplayName(ChatColor.GREEN+""+ChatColor.BOLD+"RFYL");
+				obj.getScore("Timer:    "+formatter.format(getMinutes())+":"+formatter.format(getSeconds())).setScore(1);
 				
-				if(seconds == -1){
+				if(seconds == 0){
 					setSeconds(59);
 					minutes--;
 				}
-				if(minutes == -1){
+				if(minutes == 0){
 					setSeconds(0);
 					setMinutes(10);
 					stopTimer();
@@ -193,52 +232,85 @@ public class Game {
 	public List<Player> getInMapPlayers(){
 		return this.getMap().getPlayers();
 	}
-	public static void delete(File file)
-	    	throws IOException{
-	 
+	public static void delete(File file) throws IOException{
 	    	if(file.isDirectory()){
-	 
-	    		//directory is empty, then delete it
 	    		if(file.list().length==0){
-	    			
 	    		   file.delete();
-	    		   //System.out.println("Directory is deleted : " 
-	                                                 //+ file.getAbsolutePath());
-	    			
 	    		}else{
-	    			
-	    		   //list all the directory contents
 	        	   String files[] = file.list();
-	     
 	        	   for (String temp : files) {
-	        	      //construct the file structure
 	        	      File fileDelete = new File(file, temp);
-	        		 
-	        	      //recursive delete
 	        	     delete(fileDelete);
 	        	   }
-	        		
-	        	   //check the directory again, if empty then delete it
 	        	   if(file.list().length==0){
 	           	     file.delete();
-	        	     //System.out.println("Directory is deleted : " 
-	                                                  //+ file.getAbsolutePath());
 	        	   }
 	    		}
-	    		
 	    	}else{
-	    		//if file, then delete it
 	    		file.delete();
-	    		//System.out.println("File is deleted : " + file.getAbsolutePath());
 	    	}
 	    }
+	
+	@SuppressWarnings("deprecation")
+	public void checkInGamePlayers(){
+		if(getInMapPlayers().size() < getMaxPlayers()){
+			for(Player pl: getInMapPlayers()){
+				pl.sendMessage(getInMapPlayers().size()+"/"+getMaxPlayers()+" joueurs.");
+			}
+		}else if(getInMapPlayers().size() >= getMaxPlayers()){
+			this.Startingtask = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPl(), new BukkitRunnable() {
+				int seconds = 10;
+				@Override
+				public void run() {
+					seconds--;
+					if(seconds == 0){
+						stopStartingTask();
+						start();
+					}
+					for(Player pl: getInMapPlayers()){
+						pl.sendMessage("La partie commence dans"+seconds+"secondes");
+					}
+				}
+			}, 20, 20);
+		}
+	}
+	public void stopStartingTask(){
+		Bukkit.getScheduler().cancelTask(Startingtask);
+	}
+	public GameTeam getTeamForPlayer(Player p) {
+		for(GameTeam t : teams) {
+			if (t.getPlayers().contains(p)) return t;
+		}
+		return null;
+	}
 	
 	// START AND STOP FUNCTIONS
 	
 	public void start(){
-		//TODO
+		this.started = true;
+		for(Player player: getInMapPlayers()){
+			if(getTeamForPlayer(player) == null){
+				player.sendMessage("Tu n'as pas choisi de team, tu as donc une equipe aleatoire !");
+				teams.get(new Random().nextInt(teams.size())).addPlayer(player);
+			}
+			for(GameTeam team: teams){
+				for(Player pl: team.getPlayers()){
+					pl.getInventory().clear();
+					pl.setGameMode(GameMode.SURVIVAL);
+					pl.setHealth(20);
+					pl.setFoodLevel(20);
+					pl.setExhaustion(5F);
+				}
+				team.teleport(new Location(getMap(),
+						pl.getConfig().getDouble("teams."+team.getName()+".x"),
+						pl.getConfig().getDouble("teams."+team.getName()+".y"),
+						pl.getConfig().getDouble("teams."+team.getName()+".z")));
+			}
+		}
+		startTimer();
 	}
 	public void stop(){
-		//TODO
+		this.started = false;
+		stopTimer();
 	}
 }

@@ -6,3 +6,6 @@ commands:
   left:
     description: test
     usage: /left
+  forcestart:
+    description: test
+    usage: /forcestart

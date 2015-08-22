@@ -1,0 +1,21 @@
+waitingSpawn:
+  x: 0
+  y: 201
+  z: 0
+teamSpawn:
+  red:
+    x: 50
+    y: 100
+    z: 0
+  blue:
+    x: 0
+    y: 100
+    x: 50
+  green:
+    x: -50
+    y: 100
+    z: 0
+  yellow:
+    x: 0
+    y: 100
+    z: -50
