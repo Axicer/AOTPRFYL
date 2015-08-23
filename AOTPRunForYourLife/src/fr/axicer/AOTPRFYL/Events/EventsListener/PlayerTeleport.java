@@ -22,19 +22,21 @@ public class PlayerTeleport implements Listener {
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent ev){
 		for(final Game game : InventoryGames.getGames()){
-			if(ev.getTo().getWorld() == game.getMap()){
-				Player player = ev.getPlayer();
-				player.setScoreboard(game.getScoreboard());
-				player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 14));
-				player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 11));
-				player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 13));
-				player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 4));
-				Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
-					@Override
-					public void run() {
-						game.checkInGamePlayers();
-					}
-				}, 20);
+			if(ev.getTo().getWorld() == game.getMap() & !game.isStarted()){
+				if(ev.getFrom().getWorld() != game.getMap()){
+					Player player = ev.getPlayer();
+					player.setScoreboard(game.getScoreboard());
+					player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 14));
+					player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 11));
+					player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 13));
+					player.getInventory().addItem(new ItemStack(Material.WOOL,1,(byte) 4));
+					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+						@Override
+						public void run() {
+							game.checkInGamePlayers();
+						}
+					}, 20);
+				}
 			}
 		}
 	}

@@ -24,7 +24,7 @@ public class LeftCommand implements CommandExecutor {
 			Player player = (Player) sender;
 			for(Game game: InventoryGames.getGames()){
 				if(game.getMap() == player.getWorld()){
-					if(game.isStarted()){
+					if(game.isStarted() && game.getInMapPlayers().size() > 1){
 						game.checkInGamePlayers();
 					}
 					if(game.getTeamForPlayer(player) != null){

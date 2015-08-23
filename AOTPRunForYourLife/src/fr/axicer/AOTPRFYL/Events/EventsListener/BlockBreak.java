@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
@@ -16,6 +17,7 @@ public class BlockBreak implements Listener {
 	public BlockBreak(AOTPRFYLMain pl) {
 		this.pl = pl;
 	}
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent ev){
 		for(final Game game: InventoryGames.getGames()){
@@ -25,12 +27,12 @@ public class BlockBreak implements Listener {
 						player.sendMessage(ev.getPlayer().getDisplayName()+" a cassé le beacon !");
 						player.sendMessage("L'equipe "+game.getTeamForPlayer(ev.getPlayer()).getDisplayName()+" a gagné !");
 					}
-					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
+					Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
 						@Override
 						public void run() {
 							game.stop();
 						}
-					}, 300);
+					}, 20*5);
 				}
 			}
 		}

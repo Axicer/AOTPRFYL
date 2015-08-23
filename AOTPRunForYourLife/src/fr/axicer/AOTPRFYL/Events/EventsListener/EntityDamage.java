@@ -1,6 +1,5 @@
 package fr.axicer.AOTPRFYL.Events.EventsListener;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -27,17 +26,20 @@ public class EntityDamage implements Listener {
 					if(!game.isStarted()){
 						ev.setCancelled(true);
 					}else{
-						if(player.getHealth()-ev.getDamage() <= 0){
+						if(!game.isCanTakeDamage()){
+							ev.setCancelled(true);
+						}
+						if(player.getHealth()-ev.getFinalDamage() < 1){
 							ev.setCancelled(true);
 							player.setHealth(20);
 							player.setGameMode(GameMode.SPECTATOR);
 							player.getInventory().clear();
 							player.sendMessage(ChatColor.RED+"Tu as perdu ! Tu es mort !");
 							player.sendMessage(ChatColor.GRAY+"Fait /left pour quitter la partie.");
-							player.teleport(new Location(Bukkit.getWorlds().get(0),
-									pl.getConfig().getDouble("worldSpawn.x"),
-									pl.getConfig().getDouble("worldSpawn.y"),
-									pl.getConfig().getDouble("worldSpawn.z")));
+							player.teleport(new Location(game.getMap(),
+									pl.getConfig().getDouble("waitingSpawn.x"),
+									pl.getConfig().getDouble("waitingSpawn.y"),
+									pl.getConfig().getDouble("waitingSpawn.z")));
 						}
 					}
 				}

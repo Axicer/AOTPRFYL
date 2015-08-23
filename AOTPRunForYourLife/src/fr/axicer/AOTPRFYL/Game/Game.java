@@ -45,6 +45,7 @@ public class Game {
 	private GameTeam teamGreen;
 	private GameTeam teamYellow;
 	private ArrayList<GameTeam> teams = new ArrayList<GameTeam>();
+	private boolean canTakeDamage = false;
 	
 	public Game(String name, String displayName, MapThemes theme, int maxPlayers, AOTPRFYLMain pl){
 		this.pl = pl;
@@ -155,6 +156,14 @@ public class Game {
 	public void setTeamYellow(GameTeam teamyellow) {
 		this.teamYellow = teamyellow;
 	}
+	public boolean isCanTakeDamage() {
+		return canTakeDamage;
+	}
+
+	public void setCanTakeDamage(boolean canTakeDamage) {
+		this.canTakeDamage = canTakeDamage;
+	}
+
 	public boolean isStarted() {
 		return started;
 	}
@@ -217,8 +226,15 @@ public class Game {
 				if(minutes == 0){
 					setSeconds(0);
 					setMinutes(10);
-					stopTimer();
-					stop();
+					for(Player player : getInMapPlayers()){
+						player.sendMessage("Le timer est arrivé a la fin !");
+					}
+					Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
+						@Override
+						public void run() {
+							stop();
+						}
+					}, 20*5);
 				}
 				seconds--;
 			}
@@ -227,7 +243,7 @@ public class Game {
 	public void stopTimer(){
 		Bukkit.getScheduler().cancelTask(this.getTimeTaskID());
 		for(Player player : getInMapPlayers()){
-			player.setScoreboard(null);
+			player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 		}
 	}
 	public List<Player> getInMapPlayers(){
@@ -289,29 +305,33 @@ public class Game {
 	
 	public void start(){
 		this.started = true;
+		setCanTakeDamage(true);
 		for(Player player: getInMapPlayers()){
 			if(getTeamForPlayer(player) == null){
 				player.sendMessage("Tu n'as pas choisi de team, tu as donc une equipe aleatoire !");
-				teams.get(new Random().nextInt(teams.size())).addPlayer(player);
+				teams.get(new Random().nextInt(4)).addPlayer(player);
 			}
-			for(GameTeam team: teams){
-				for(Player pl: team.getPlayers()){
-					pl.getInventory().clear();
-					pl.setGameMode(GameMode.SURVIVAL);
-					pl.setHealth(20);
-					pl.setFoodLevel(20);
-					pl.setExhaustion(5F);
-				}
-				team.teleport(new Location(getMap(),
-						pl.getConfig().getDouble("teams."+team.getName()+".x"),
-						pl.getConfig().getDouble("teams."+team.getName()+".y"),
-						pl.getConfig().getDouble("teams."+team.getName()+".z")));
+		}
+		for(GameTeam team: teams){
+			Location teamSpawnLoc = new Location(getMap(),
+					pl.getConfig().getDouble("teamSpawn."+team.getName()+".x"),
+					pl.getConfig().getDouble("teamSpawn."+team.getName()+".y"),
+					pl.getConfig().getDouble("teamSpawn."+team.getName()+".z"));
+			for(Player pl: team.getPlayers()){
+				pl.setGameMode(GameMode.SURVIVAL);
+				pl.setHealth(20);
+				pl.setFoodLevel(20);
+				pl.setExhaustion(5F);
+				pl.getInventory().clear();
 			}
+			team.teleport(teamSpawnLoc);
 		}
 		startTimer();
 	}
 	public void stop(){
+		setCanTakeDamage(false);
 		stopTimer();
+		getObj().unregister();
 		setObj(scoreboard.registerNewObjective("RFYL", "dummy"));
 		for(Player player : getInMapPlayers()){
 			player.setGameMode(GameMode.SURVIVAL);
@@ -339,5 +359,10 @@ public class Game {
 		this.teams.add(teamGreen);
 		this.teams.add(teamYellow);
 		this.started = false;
+		try {
+			reloadMap();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

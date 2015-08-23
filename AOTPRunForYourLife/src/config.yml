@@ -14,7 +14,7 @@ teamSpawn:
   blue:
     x: 0
     y: 100
-    x: 50
+    z: 50
   green:
     x: -50
     y: 100

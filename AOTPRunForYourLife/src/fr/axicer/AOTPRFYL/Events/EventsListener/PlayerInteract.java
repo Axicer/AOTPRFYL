@@ -21,13 +21,17 @@ import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 public class PlayerInteract implements Listener {
 	
 	public AOTPRFYLMain pl;
-	public ItemStack woolRed = new ItemStack(Material.WOOL,1,(byte) 14);
-	public ItemStack woolBlue = new ItemStack(Material.WOOL,1,(byte) 11);
-	public ItemStack woolGreen = new ItemStack(Material.WOOL,1,(byte) 13);
-	public ItemStack woolYellow = new ItemStack(Material.WOOL,1,(byte) 4);
+	public ItemStack woolRed;
+	public ItemStack woolBlue;
+	public ItemStack woolGreen;
+	public ItemStack woolYellow;
 	
 	public PlayerInteract(AOTPRFYLMain pl) {
 		this.pl = pl;
+		woolRed = new ItemStack(Material.WOOL,1,(byte) 14);
+		woolBlue = new ItemStack(Material.WOOL,1,(byte) 11);
+		woolGreen = new ItemStack(Material.WOOL,1,(byte) 13);
+		woolYellow = new ItemStack(Material.WOOL,1,(byte) 4);
 	}
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent ev){
@@ -63,34 +67,36 @@ public class PlayerInteract implements Listener {
 		if(ev.getAction().equals(Action.RIGHT_CLICK_AIR) || ev.getAction().equals(Action.RIGHT_CLICK_BLOCK)){
 			for(Game game : InventoryGames.getGames()){
 				if(ev.getPlayer().getWorld() == game.getMap()){
-					if(ev.getItem().equals(woolRed)){
-						ev.setCancelled(true);
-						game.getTeamBlue().removePlayer(ev.getPlayer());
-						game.getTeamGreen().removePlayer(ev.getPlayer());
-						game.getTeamYellow().removePlayer(ev.getPlayer());
-						game.getTeamRed().addPlayer(ev.getPlayer());
-						ev.getPlayer().sendMessage("Tu as rejoint l'equipe rouge !");
-					}else if(ev.getItem().equals(woolBlue)){
-						ev.setCancelled(true);
-						game.getTeamRed().removePlayer(ev.getPlayer());
-						game.getTeamGreen().removePlayer(ev.getPlayer());
-						game.getTeamYellow().removePlayer(ev.getPlayer());
-						game.getTeamBlue().addPlayer(ev.getPlayer());
-							ev.getPlayer().sendMessage("Tu as rejoint l'equipe bleu !");
-					}else if(ev.getItem().equals(woolGreen)){
-						ev.setCancelled(true);
-						game.getTeamRed().removePlayer(ev.getPlayer());
-						game.getTeamYellow().removePlayer(ev.getPlayer());
-						game.getTeamBlue().removePlayer(ev.getPlayer());
-						game.getTeamGreen().addPlayer(ev.getPlayer());
-						ev.getPlayer().sendMessage("Tu as rejoint l'equipe verte !");
-					}else if(ev.getItem().equals(woolYellow)){
-						ev.setCancelled(true);
-						game.getTeamRed().removePlayer(ev.getPlayer());
-						game.getTeamGreen().removePlayer(ev.getPlayer());
-						game.getTeamBlue().removePlayer(ev.getPlayer());
-						game.getTeamYellow().addPlayer(ev.getPlayer());
-						ev.getPlayer().sendMessage("Tu as rejoint l'equipe jaune !");
+					if(ev.getItem() != null){
+						if(ev.getItem().equals(woolRed)){
+							ev.setCancelled(true);
+							game.getTeamBlue().removePlayer(ev.getPlayer());
+							game.getTeamGreen().removePlayer(ev.getPlayer());
+							game.getTeamYellow().removePlayer(ev.getPlayer());
+							game.getTeamRed().addPlayer(ev.getPlayer());
+							ev.getPlayer().sendMessage("Tu as rejoint l'equipe rouge !");
+						}else if(ev.getItem().equals(woolBlue)){
+							ev.setCancelled(true);
+							game.getTeamRed().removePlayer(ev.getPlayer());
+							game.getTeamGreen().removePlayer(ev.getPlayer());
+							game.getTeamYellow().removePlayer(ev.getPlayer());
+							game.getTeamBlue().addPlayer(ev.getPlayer());
+								ev.getPlayer().sendMessage("Tu as rejoint l'equipe bleu !");
+						}else if(ev.getItem().equals(woolGreen)){
+							ev.setCancelled(true);
+							game.getTeamRed().removePlayer(ev.getPlayer());
+							game.getTeamYellow().removePlayer(ev.getPlayer());
+							game.getTeamBlue().removePlayer(ev.getPlayer());
+							game.getTeamGreen().addPlayer(ev.getPlayer());
+							ev.getPlayer().sendMessage("Tu as rejoint l'equipe verte !");
+						}else if(ev.getItem().equals(woolYellow)){
+							ev.setCancelled(true);
+							game.getTeamRed().removePlayer(ev.getPlayer());
+							game.getTeamGreen().removePlayer(ev.getPlayer());
+							game.getTeamBlue().removePlayer(ev.getPlayer());
+							game.getTeamYellow().addPlayer(ev.getPlayer());
+							ev.getPlayer().sendMessage("Tu as rejoint l'equipe jaune !");
+						}
 					}
 				}
 			}
