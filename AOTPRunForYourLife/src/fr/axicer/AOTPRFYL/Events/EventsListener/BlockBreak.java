@@ -1,6 +1,7 @@
 package fr.axicer.AOTPRFYL.Events.EventsListener;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -28,15 +29,15 @@ public class BlockBreak implements Listener {
 				}else{
 					if(ev.getBlock().getType().equals(Material.BEACON)){
 						for(Player player: game.getInMapPlayers()){
-							player.sendMessage(ev.getPlayer().getDisplayName()+" a cassé le beacon !");
-							player.sendMessage("L'equipe "+game.getTeamForPlayer(ev.getPlayer()).getDisplayName()+" a gagné !");
+							player.sendMessage(ChatColor.BOLD+ev.getPlayer().getDisplayName()+" a cassé le beacon !");
+							player.sendMessage(ChatColor.BOLD+"L'equipe "+game.getTeamForPlayer(ev.getPlayer()).getColor()+game.getTeamForPlayer(ev.getPlayer()).getDisplayName()+ChatColor.RESET+ChatColor.BOLD+" a gagné !");
 						}
 						Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
 							@Override
 							public void run() {
 								game.stop();
 							}
-						}, 20*5);
+						}, 20*10);
 					}
 				}
 			}

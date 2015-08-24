@@ -13,9 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -37,7 +39,7 @@ public class Game {
 	private Integer minutes = 10;
 	private Integer timeTaskID;
 	private Scoreboard scoreboard;
-	private Integer Startingtask;
+	private Integer Startingtask = 0;
 	private Objective obj;
 	private GameTeam teamRed;
 	private GameTeam teamBlue;
@@ -46,6 +48,7 @@ public class Game {
 	private ArrayList<GameTeam> teams = new ArrayList<GameTeam>();
 	private GameStatus gamestatus;
 	private ArrayList<Player> inGamePlayers = new ArrayList<Player>();
+	public boolean TaskTimerstarted = false;
 	
 	public Game(String name, String displayName, MapThemes theme, int maxPlayers, AOTPRFYLMain pl){
 		this.pl = pl;
@@ -273,22 +276,36 @@ public class Game {
 			for(Player pl: getInMapPlayers()){
 				pl.sendMessage(getInMapPlayers().size()+"/"+getMaxPlayers()+" joueurs.");
 			}
-			if(!Bukkit.getScheduler().isCurrentlyRunning(this.Startingtask)){
+			if(!TaskTimerstarted){
+				this.TaskTimerstarted = true;
 				this.Startingtask = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPl(), new BukkitRunnable() {
-					int seconds = 10;
+					int seconds = 20;
 					@Override
 					public void run() {
 						if(getInMapPlayers().size() < 4){
 							stopStartingTask();
 						}
-						seconds--;
+						if(seconds == 20){
+							for(Player pl: getInMapPlayers()){
+								pl.sendMessage(ChatColor.BOLD+"La partie va commencer dans "+seconds+" secondes");
+							}
+						}
+						if(seconds == 10){
+							for(Player pl: getInMapPlayers()){
+								pl.sendMessage(ChatColor.BOLD+"La partie va commencer dans "+seconds+" secondes");
+							}
+						}
+						if(seconds <= 10){
+							for(Player pl: getInMapPlayers()){
+								pl.sendMessage("La partie commence dans "+seconds+" secondes");
+							}
+						}
 						if(seconds == 0){
 							stopStartingTask();
 							start();
 						}
-						for(Player pl: getInMapPlayers()){
-							pl.sendMessage("La partie commence dans"+seconds+"secondes");
-						}
+						
+						seconds--;
 					}
 				}, 20, 20);
 			}
@@ -308,6 +325,7 @@ public class Game {
 	}
 	public void stopStartingTask(){
 		Bukkit.getScheduler().cancelTask(Startingtask);
+		this.TaskTimerstarted = false;
 	}
 	public GameTeam getTeamForPlayer(Player p) {
 		for(GameTeam t : teams) {
@@ -322,7 +340,7 @@ public class Game {
 		setGamestatus(GameStatus.STARTED);
 		for(Player player: getInMapPlayers()){
 			if(getTeamForPlayer(player) == null){
-				player.sendMessage("Tu n'as pas choisi de team, tu as donc une equipe aleatoire !");
+				player.sendMessage(ChatColor.BOLD+"Tu n'as pas choisi de team, tu as donc une equipe aleatoire !");
 				teams.get(new Random().nextInt(4)).addPlayer(player);
 			}
 			getInGamePlayers().add(player);
@@ -352,6 +370,10 @@ public class Game {
 		for(Player player : getInMapPlayers()){
 			player.setGameMode(GameMode.SURVIVAL);
 			player.getInventory().clear();
+			player.getInventory().setHelmet(new ItemStack(Material.AIR));
+			player.getInventory().setChestplate(new ItemStack(Material.AIR));
+			player.getInventory().setLeggings(new ItemStack(Material.AIR));
+			player.getInventory().setBoots(new ItemStack(Material.AIR));
 			player.setHealth(20);
 			player.setFoodLevel(20);
 			player.setExhaustion(5F);
