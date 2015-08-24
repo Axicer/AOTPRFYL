@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class EntityDamage implements Listener {
@@ -23,12 +24,9 @@ public class EntityDamage implements Listener {
 			Player player = (Player) ev.getEntity();
 			for(Game game: InventoryGames.getGames()){
 				if(game.getMap() == player.getWorld()){
-					if(!game.isStarted()){
+					if(game.getGamestatus().equals(GameStatus.READY) || game.getGamestatus().equals(GameStatus.RELOADING)){
 						ev.setCancelled(true);
 					}else{
-						if(!game.isCanTakeDamage()){
-							ev.setCancelled(true);
-						}
 						if(player.getHealth()-ev.getFinalDamage() < 1){
 							ev.setCancelled(true);
 							player.setHealth(20);
@@ -40,6 +38,7 @@ public class EntityDamage implements Listener {
 									pl.getConfig().getDouble("waitingSpawn.x"),
 									pl.getConfig().getDouble("waitingSpawn.y"),
 									pl.getConfig().getDouble("waitingSpawn.z")));
+							game.checkInGamePlayers();
 						}
 					}
 				}

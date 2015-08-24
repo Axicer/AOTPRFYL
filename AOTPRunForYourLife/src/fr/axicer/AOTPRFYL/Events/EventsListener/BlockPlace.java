@@ -6,6 +6,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class BlockPlace implements Listener {
@@ -16,7 +17,7 @@ public class BlockPlace implements Listener {
 	@EventHandler
 	public void onBreakBlock(BlockBreakEvent ev){
 		for(Game game : InventoryGames.getGames()){
-			if(game.getMap() == ev.getPlayer().getWorld() && !game.isStarted()){
+			if(game.getMap() == ev.getPlayer().getWorld() && game.getGamestatus().equals(GameStatus.READY)){
 				ev.setCancelled(true);
 			}
 		}

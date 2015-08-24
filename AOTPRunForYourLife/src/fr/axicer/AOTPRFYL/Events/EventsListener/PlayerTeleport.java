@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class PlayerTeleport implements Listener {
@@ -22,7 +23,7 @@ public class PlayerTeleport implements Listener {
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent ev){
 		for(final Game game : InventoryGames.getGames()){
-			if(ev.getTo().getWorld() == game.getMap() & !game.isStarted()){
+			if(ev.getTo().getWorld() == game.getMap() && game.getGamestatus().equals(GameStatus.READY)){
 				if(ev.getFrom().getWorld() != game.getMap()){
 					Player player = ev.getPlayer();
 					player.setScoreboard(game.getScoreboard());
@@ -33,7 +34,7 @@ public class PlayerTeleport implements Listener {
 					Bukkit.getScheduler().runTaskLater(pl, new Runnable() {
 						@Override
 						public void run() {
-							game.checkInGamePlayers();
+							game.checkInMapPlayers();
 						}
 					}, 20);
 				}

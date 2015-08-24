@@ -1,5 +1,6 @@
 package fr.axicer.AOTPRFYL;
 
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.axicer.AOTPRFYL.Commands.CommandManager;
@@ -11,6 +12,7 @@ public class AOTPRFYLMain extends JavaPlugin{
 	
 	@Override
 	public void onEnable() {
+		Bukkit.setSpawnRadius(0);
 		EventManager.registerEvents(this);
 		CommandManager.registerCommands(this);
 		saveDefaultConfig();

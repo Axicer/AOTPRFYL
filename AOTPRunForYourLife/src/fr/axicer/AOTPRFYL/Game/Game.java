@@ -37,7 +37,6 @@ public class Game {
 	private Integer minutes = 10;
 	private Integer timeTaskID;
 	private Scoreboard scoreboard;
-	private boolean started;
 	private Integer Startingtask;
 	private Objective obj;
 	private GameTeam teamRed;
@@ -45,7 +44,8 @@ public class Game {
 	private GameTeam teamGreen;
 	private GameTeam teamYellow;
 	private ArrayList<GameTeam> teams = new ArrayList<GameTeam>();
-	private boolean canTakeDamage = false;
+	private GameStatus gamestatus;
+	private ArrayList<Player> inGamePlayers = new ArrayList<Player>();
 	
 	public Game(String name, String displayName, MapThemes theme, int maxPlayers, AOTPRFYLMain pl){
 		this.pl = pl;
@@ -63,6 +63,7 @@ public class Game {
 		this.teams.add(teamBlue);
 		this.teams.add(teamGreen);
 		this.teams.add(teamYellow);
+		setGamestatus(GameStatus.READY);
 	}
 	
 	// GETTERS AND SETTERS
@@ -156,19 +157,17 @@ public class Game {
 	public void setTeamYellow(GameTeam teamyellow) {
 		this.teamYellow = teamyellow;
 	}
-	public boolean isCanTakeDamage() {
-		return canTakeDamage;
+	public ArrayList<Player> getInGamePlayers() {
+		return inGamePlayers;
 	}
-
-	public void setCanTakeDamage(boolean canTakeDamage) {
-		this.canTakeDamage = canTakeDamage;
+	public void setInGamePlayers(ArrayList<Player> inGamePlayers) {
+		this.inGamePlayers = inGamePlayers;
 	}
-
-	public boolean isStarted() {
-		return started;
+	public GameStatus getGamestatus() {
+		return gamestatus;
 	}
-	public void setStarted(boolean started) {
-		this.started = started;
+	public void setGamestatus(GameStatus gamestatus) {
+		this.gamestatus = gamestatus;
 	}
 	
 	// GAME FUNCTIONS
@@ -269,26 +268,42 @@ public class Game {
 	    }
 	
 	@SuppressWarnings("deprecation")
-	public void checkInGamePlayers(){
-		if(getInMapPlayers().size() < getMaxPlayers()){
+	public void checkInMapPlayers(){
+		if(getInMapPlayers().size() == getMaxPlayers() || getInMapPlayers().size() >= 4){
 			for(Player pl: getInMapPlayers()){
 				pl.sendMessage(getInMapPlayers().size()+"/"+getMaxPlayers()+" joueurs.");
 			}
-		}else if(getInMapPlayers().size() >= getMaxPlayers()){
-			this.Startingtask = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPl(), new BukkitRunnable() {
-				int seconds = 10;
-				@Override
-				public void run() {
-					seconds--;
-					if(seconds == 0){
-						stopStartingTask();
-						start();
+			if(!Bukkit.getScheduler().isCurrentlyRunning(this.Startingtask)){
+				this.Startingtask = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPl(), new BukkitRunnable() {
+					int seconds = 10;
+					@Override
+					public void run() {
+						if(getInMapPlayers().size() < 4){
+							stopStartingTask();
+						}
+						seconds--;
+						if(seconds == 0){
+							stopStartingTask();
+							start();
+						}
+						for(Player pl: getInMapPlayers()){
+							pl.sendMessage("La partie commence dans"+seconds+"secondes");
+						}
 					}
-					for(Player pl: getInMapPlayers()){
-						pl.sendMessage("La partie commence dans"+seconds+"secondes");
-					}
-				}
-			}, 20, 20);
+				}, 20, 20);
+			}
+		}else{
+			for(Player pl: getInMapPlayers()){
+				pl.sendMessage(getInMapPlayers().size()+"/"+getMaxPlayers()+" joueurs.");
+			}
+		}
+	}
+	public void checkInGamePlayers(){
+		if(getInGamePlayers().size() <= 1){
+			for(Player pl: getInGamePlayers()){
+				pl.sendMessage("tu es tous seul ! la partie va redemarrer !");
+			}
+			stop();
 		}
 	}
 	public void stopStartingTask(){
@@ -304,13 +319,13 @@ public class Game {
 	// START AND STOP FUNCTIONS
 	
 	public void start(){
-		this.started = true;
-		setCanTakeDamage(true);
+		setGamestatus(GameStatus.STARTED);
 		for(Player player: getInMapPlayers()){
 			if(getTeamForPlayer(player) == null){
 				player.sendMessage("Tu n'as pas choisi de team, tu as donc une equipe aleatoire !");
 				teams.get(new Random().nextInt(4)).addPlayer(player);
 			}
+			getInGamePlayers().add(player);
 		}
 		for(GameTeam team: teams){
 			Location teamSpawnLoc = new Location(getMap(),
@@ -329,8 +344,9 @@ public class Game {
 		startTimer();
 	}
 	public void stop(){
-		setCanTakeDamage(false);
+		setGamestatus(GameStatus.RELOADING);
 		stopTimer();
+		getInGamePlayers().clear();
 		getObj().unregister();
 		setObj(scoreboard.registerNewObjective("RFYL", "dummy"));
 		for(Player player : getInMapPlayers()){
@@ -358,11 +374,11 @@ public class Game {
 		this.teams.add(teamBlue);
 		this.teams.add(teamGreen);
 		this.teams.add(teamYellow);
-		this.started = false;
 		try {
 			reloadMap();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		setGamestatus(GameStatus.READY);
 	}
 }

@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class PlayerInteract implements Listener {
@@ -51,10 +52,12 @@ public class PlayerInteract implements Listener {
 						lores.add(game.getName());
 						lores.add(ChatColor.DARK_RED+"Theme: "+ChatColor.GOLD+game.getTheme().getName());
 						lores.add(ChatColor.WHITE+""+game.getInMapPlayers().size()+"/"+game.getMaxPlayers());
-						if(game.isStarted()){
+						if(game.getGamestatus().equals(GameStatus.STARTED)){
 							lores.add(ChatColor.RED+"Started !");
-						}else{
+						}else if(game.getGamestatus().equals(GameStatus.READY)){
 							lores.add(ChatColor.GREEN+"Prête !");
+						}else{
+							lores.add(ChatColor.BLUE+"Redemarrage...");
 						}
 						itemMeta.setLore(lores);
 						item.setItemMeta(itemMeta);

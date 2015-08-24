@@ -4,13 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class LeftCommand implements CommandExecutor {
@@ -18,14 +22,20 @@ public class LeftCommand implements CommandExecutor {
 	public LeftCommand(AOTPRFYLMain pl) {
 		this.pl = pl;
 	}
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(sender instanceof Player){
 			Player player = (Player) sender;
-			for(Game game: InventoryGames.getGames()){
+			for(final Game game: InventoryGames.getGames()){
 				if(game.getMap() == player.getWorld()){
-					if(game.isStarted() && game.getInMapPlayers().size() > 1){
-						game.checkInGamePlayers();
+					if(game.getGamestatus().equals(GameStatus.READY)){
+						Bukkit.getScheduler().scheduleSyncDelayedTask(pl, new BukkitRunnable() {
+							@Override
+							public void run() {
+								game.checkInMapPlayers();
+							}
+						}, 20);
 					}
 					if(game.getTeamForPlayer(player) != null){
 						game.getTeamForPlayer(player).removePlayer(player);
@@ -36,6 +46,10 @@ public class LeftCommand implements CommandExecutor {
 							pl.getConfig().getDouble("worldSpawn.z")));
 					player.sendMessage(ChatColor.GRAY+"Teleporté au spawn.");
 					player.getInventory().clear();
+					player.getInventory().setHelmet(new ItemStack(Material.AIR));
+					player.getInventory().setChestplate(new ItemStack(Material.AIR));
+					player.getInventory().setLeggings(new ItemStack(Material.AIR));
+					player.getInventory().setBoots(new ItemStack(Material.AIR));
 					player.setGameMode(GameMode.SURVIVAL);
 					player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 				}

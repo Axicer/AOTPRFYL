@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class PlayerInventoryClick implements Listener {
@@ -25,8 +26,10 @@ public class PlayerInventoryClick implements Listener {
 				for(Game game: InventoryGames.getGames()){
 					if(game.getName().equals(ev.getCurrentItem().getItemMeta().getLore().get(0))){
 						ev.setCancelled(true);
-						if(game.isStarted()){
+						if(game.getGamestatus().equals(GameStatus.STARTED)){
 							ev.getWhoClicked().sendMessage("La partie a déja commencé !");
+						}else if(game.getGamestatus().equals(GameStatus.RELOADING)){
+							ev.getWhoClicked().sendMessage("La partie est en cours de redemarrage !");
 						}else{
 							ev.getWhoClicked().teleport(new Location(game.getMap(),
 									pl.getConfig().getDouble("waitingSpawn.x"),

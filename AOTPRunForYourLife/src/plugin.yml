@@ -1,11 +1,8 @@
 name: AOTPRFYL
-version: 1.0
+version: 1.4
 main: fr.axicer.AOTPRFYL.AOTPRFYLMain
 
 commands:
   left:
-    description: test
+    description: Quitter la partie
     usage: /left
-  forcestart:
-    description: test
-    usage: /forcestart

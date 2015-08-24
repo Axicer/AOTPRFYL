@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class BlockBreak implements Listener {
@@ -22,17 +23,21 @@ public class BlockBreak implements Listener {
 	public void onBlockBreak(BlockBreakEvent ev){
 		for(final Game game: InventoryGames.getGames()){
 			if(game.getMap() == ev.getPlayer().getWorld()){
-				if(ev.getBlock().getType().equals(Material.BEACON) && game.isStarted()){
-					for(Player player: game.getInMapPlayers()){
-						player.sendMessage(ev.getPlayer().getDisplayName()+" a cassé le beacon !");
-						player.sendMessage("L'equipe "+game.getTeamForPlayer(ev.getPlayer()).getDisplayName()+" a gagné !");
-					}
-					Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
-						@Override
-						public void run() {
-							game.stop();
+				if(game.getGamestatus().equals(GameStatus.READY) || game.getGamestatus().equals(GameStatus.RELOADING)){
+					ev.setCancelled(true);
+				}else{
+					if(ev.getBlock().getType().equals(Material.BEACON)){
+						for(Player player: game.getInMapPlayers()){
+							player.sendMessage(ev.getPlayer().getDisplayName()+" a cassé le beacon !");
+							player.sendMessage("L'equipe "+game.getTeamForPlayer(ev.getPlayer()).getDisplayName()+" a gagné !");
 						}
-					}, 20*5);
+						Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
+							@Override
+							public void run() {
+								game.stop();
+							}
+						}, 20*5);
+					}
 				}
 			}
 		}
