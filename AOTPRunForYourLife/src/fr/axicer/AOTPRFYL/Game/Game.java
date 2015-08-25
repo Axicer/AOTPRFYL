@@ -59,9 +59,9 @@ public class Game {
 		this.scoreboard = Bukkit.getServer().getScoreboardManager().getNewScoreboard();
 		setObj(scoreboard.registerNewObjective("RFYL", "dummy"));
 		setTeamRed(new GameTeam("red", ChatColor.RED+"Rouge", ChatColor.RED, getScoreboard()));
-		setTeamBlue(new GameTeam("blue", ChatColor.RED+"Bleu", ChatColor.BLUE, getScoreboard()));
-		setTeamGreen(new GameTeam("green", ChatColor.RED+"Vert", ChatColor.GREEN, getScoreboard()));
-		setTeamYellow(new GameTeam("yellow", ChatColor.RED+"Jaune", ChatColor.YELLOW, getScoreboard()));
+		setTeamBlue(new GameTeam("blue", ChatColor.BLUE+"Bleu", ChatColor.BLUE, getScoreboard()));
+		setTeamGreen(new GameTeam("green", ChatColor.GREEN+"Vert", ChatColor.GREEN, getScoreboard()));
+		setTeamYellow(new GameTeam("yellow", ChatColor.YELLOW+"Jaune", ChatColor.YELLOW, getScoreboard()));
 		this.teams.add(teamRed);
 		this.teams.add(teamBlue);
 		this.teams.add(teamGreen);
@@ -279,13 +279,13 @@ public class Game {
 			if(!TaskTimerstarted){
 				this.TaskTimerstarted = true;
 				this.Startingtask = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPl(), new BukkitRunnable() {
-					int seconds = 20;
+					int seconds = 30;
 					@Override
 					public void run() {
 						if(getInMapPlayers().size() < 4){
 							stopStartingTask();
 						}
-						if(seconds == 20){
+						if(seconds == 30){
 							for(Player pl: getInMapPlayers()){
 								pl.sendMessage(ChatColor.BOLD+"La partie va commencer dans "+seconds+" secondes");
 							}
@@ -295,7 +295,7 @@ public class Game {
 								pl.sendMessage(ChatColor.BOLD+"La partie va commencer dans "+seconds+" secondes");
 							}
 						}
-						if(seconds <= 10){
+						if(seconds < 10){
 							for(Player pl: getInMapPlayers()){
 								pl.sendMessage("La partie commence dans "+seconds+" secondes");
 							}
@@ -304,7 +304,6 @@ public class Game {
 							stopStartingTask();
 							start();
 						}
-						
 						seconds--;
 					}
 				}, 20, 20);
@@ -333,6 +332,38 @@ public class Game {
 		}
 		return null;
 	}
+	@SuppressWarnings("deprecation")
+	public void forceStart(){
+		if(!TaskTimerstarted){
+			this.TaskTimerstarted = true;
+			this.Startingtask = Bukkit.getScheduler().scheduleSyncRepeatingTask(getPl(), new BukkitRunnable() {
+				int seconds = 30;
+				@Override
+				public void run() {
+					if(seconds == 30){
+						for(Player pl: getInMapPlayers()){
+							pl.sendMessage(ChatColor.BOLD+"La partie va commencer dans "+seconds+" secondes");
+						}
+					}
+					if(seconds == 10){
+						for(Player pl: getInMapPlayers()){
+							pl.sendMessage(ChatColor.BOLD+"La partie va commencer dans "+seconds+" secondes");
+						}
+					}
+					if(seconds < 10){
+						for(Player pl: getInMapPlayers()){
+							pl.sendMessage("La partie commence dans "+seconds+" secondes");
+						}
+					}
+					if(seconds == 0){
+						stopStartingTask();
+						start();
+					}
+					seconds--;
+				}
+			}, 20, 20);
+		}
+	}
 	
 	// START AND STOP FUNCTIONS
 	
@@ -341,7 +372,16 @@ public class Game {
 		for(Player player: getInMapPlayers()){
 			if(getTeamForPlayer(player) == null){
 				player.sendMessage(ChatColor.BOLD+"Tu n'as pas choisi de team, tu as donc une equipe aleatoire !");
-				teams.get(new Random().nextInt(4)).addPlayer(player);
+				//teams.get(new Random().nextInt(4)).addPlayer(player);
+				int playerNumber = 5;
+				GameTeam lowerPlayerNumber = teams.get(new Random().nextInt(4));
+				for(GameTeam team : teams){
+					if(team.getPlayers().size() <= playerNumber){
+						lowerPlayerNumber = team;
+						playerNumber = team.getPlayers().size();
+					}
+				}
+				lowerPlayerNumber.addPlayer(player);
 			}
 			getInGamePlayers().add(player);
 		}
@@ -388,9 +428,9 @@ public class Game {
 			team.unregister();
 		}
 		setTeamRed(new GameTeam("red", ChatColor.RED+"Rouge", ChatColor.RED, getScoreboard()));
-		setTeamBlue(new GameTeam("blue", ChatColor.RED+"Bleu", ChatColor.BLUE, getScoreboard()));
-		setTeamGreen(new GameTeam("green", ChatColor.RED+"Vert", ChatColor.GREEN, getScoreboard()));
-		setTeamYellow(new GameTeam("yellow", ChatColor.RED+"Jaune", ChatColor.YELLOW, getScoreboard()));
+		setTeamBlue(new GameTeam("blue", ChatColor.BLUE+"Bleu", ChatColor.BLUE, getScoreboard()));
+		setTeamGreen(new GameTeam("green", ChatColor.GREEN+"Vert", ChatColor.GREEN, getScoreboard()));
+		setTeamYellow(new GameTeam("yellow", ChatColor.YELLOW+"Jaune", ChatColor.YELLOW, getScoreboard()));
 		this.teams.clear();
 		this.teams.add(teamRed);
 		this.teams.add(teamBlue);

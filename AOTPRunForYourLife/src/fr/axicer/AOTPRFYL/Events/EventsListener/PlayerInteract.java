@@ -71,28 +71,28 @@ public class PlayerInteract implements Listener {
 			for(Game game : InventoryGames.getGames()){
 				if(ev.getPlayer().getWorld() == game.getMap()){
 					if(ev.getItem() != null){
-						if(ev.getItem().equals(woolRed)){
+						if(ev.getItem().equals(woolRed) && game.getTeamRed().getPlayers().size() < 5){
 							ev.setCancelled(true);
 							game.getTeamBlue().removePlayer(ev.getPlayer());
 							game.getTeamGreen().removePlayer(ev.getPlayer());
 							game.getTeamYellow().removePlayer(ev.getPlayer());
 							game.getTeamRed().addPlayer(ev.getPlayer());
 							ev.getPlayer().sendMessage("Tu as rejoint l'equipe rouge !");
-						}else if(ev.getItem().equals(woolBlue)){
+						}else if(ev.getItem().equals(woolBlue) && game.getTeamBlue().getPlayers().size() < 5){
 							ev.setCancelled(true);
 							game.getTeamRed().removePlayer(ev.getPlayer());
 							game.getTeamGreen().removePlayer(ev.getPlayer());
 							game.getTeamYellow().removePlayer(ev.getPlayer());
 							game.getTeamBlue().addPlayer(ev.getPlayer());
 								ev.getPlayer().sendMessage("Tu as rejoint l'equipe bleu !");
-						}else if(ev.getItem().equals(woolGreen)){
+						}else if(ev.getItem().equals(woolGreen) && game.getTeamGreen().getPlayers().size() < 5){
 							ev.setCancelled(true);
 							game.getTeamRed().removePlayer(ev.getPlayer());
 							game.getTeamYellow().removePlayer(ev.getPlayer());
 							game.getTeamBlue().removePlayer(ev.getPlayer());
 							game.getTeamGreen().addPlayer(ev.getPlayer());
 							ev.getPlayer().sendMessage("Tu as rejoint l'equipe verte !");
-						}else if(ev.getItem().equals(woolYellow)){
+						}else if(ev.getItem().equals(woolYellow) && game.getTeamYellow().getPlayers().size() < 5){
 							ev.setCancelled(true);
 							game.getTeamRed().removePlayer(ev.getPlayer());
 							game.getTeamGreen().removePlayer(ev.getPlayer());

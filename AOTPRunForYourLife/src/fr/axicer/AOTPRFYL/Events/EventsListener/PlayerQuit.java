@@ -6,6 +6,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Game.Game;
+import fr.axicer.AOTPRFYL.Game.GameStatus;
 import fr.axicer.AOTPRFYL.Utils.InventoryGames;
 
 public class PlayerQuit implements Listener {
@@ -17,7 +18,12 @@ public class PlayerQuit implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent ev){
 		for(Game game : InventoryGames.getGames()){
 			if(game.getMap() == ev.getPlayer().getWorld()){
-				game.checkInGamePlayers();
+				if(game.getGamestatus().equals(GameStatus.READY)){
+					game.checkInMapPlayers();
+				}else{
+					game.checkInGamePlayers();
+				}
+				
 			}
 		}
 	}

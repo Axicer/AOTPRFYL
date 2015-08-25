@@ -4,6 +4,7 @@ import fr.axicer.AOTPRFYL.AOTPRFYLMain;
 import fr.axicer.AOTPRFYL.Events.EventsListener.BlockBreak;
 import fr.axicer.AOTPRFYL.Events.EventsListener.BlockPlace;
 import fr.axicer.AOTPRFYL.Events.EventsListener.EntityDamage;
+import fr.axicer.AOTPRFYL.Events.EventsListener.PlayerChat;
 import fr.axicer.AOTPRFYL.Events.EventsListener.PlayerInventoryClick;
 import fr.axicer.AOTPRFYL.Events.EventsListener.PlayerInteract;
 import fr.axicer.AOTPRFYL.Events.EventsListener.PlayerJoin;
@@ -22,5 +23,6 @@ public class EventManager {
 		pl.getServer().getPluginManager().registerEvents(new BlockBreak(pl), pl);
 		pl.getServer().getPluginManager().registerEvents(new BlockPlace(pl), pl);
 		pl.getServer().getPluginManager().registerEvents(new PlayerMove(pl), pl);
+		pl.getServer().getPluginManager().registerEvents(new PlayerChat(pl), pl);
 	}
 }

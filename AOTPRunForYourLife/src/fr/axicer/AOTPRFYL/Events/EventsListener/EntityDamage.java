@@ -34,6 +34,9 @@ public class EntityDamage implements Listener {
 							player.getInventory().clear();
 							player.sendMessage(ChatColor.RED+"Tu as perdu ! Tu es mort !");
 							player.sendMessage(ChatColor.GRAY+"Fait /left pour quitter la partie.");
+							for(Player pl : game.getInMapPlayers()){
+								pl.sendMessage(ChatColor.BOLD+player.getDisplayName()+" est mort !");
+							}
 							player.teleport(new Location(game.getMap(),
 									pl.getConfig().getDouble("waitingSpawn.x"),
 									pl.getConfig().getDouble("waitingSpawn.y"),

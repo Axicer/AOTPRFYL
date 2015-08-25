@@ -6,3 +6,6 @@ commands:
   left:
     description: Quitter la partie
     usage: /left
+  start:
+    description: Forcer le demarrage de la partie
+    usage: /start

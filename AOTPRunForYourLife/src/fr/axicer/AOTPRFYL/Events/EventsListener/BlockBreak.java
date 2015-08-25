@@ -28,10 +28,13 @@ public class BlockBreak implements Listener {
 					ev.setCancelled(true);
 				}else{
 					if(ev.getBlock().getType().equals(Material.BEACON)){
+						ev.setCancelled(true);
+						ev.getBlock().setType(Material.AIR);
 						for(Player player: game.getInMapPlayers()){
 							player.sendMessage(ChatColor.BOLD+ev.getPlayer().getDisplayName()+" a cassé le beacon !");
 							player.sendMessage(ChatColor.BOLD+"L'equipe "+game.getTeamForPlayer(ev.getPlayer()).getColor()+game.getTeamForPlayer(ev.getPlayer()).getDisplayName()+ChatColor.RESET+ChatColor.BOLD+" a gagné !");
 						}
+						game.setGamestatus(GameStatus.RELOADING);
 						Bukkit.getScheduler().runTaskLater(pl, new BukkitRunnable() {
 							@Override
 							public void run() {
